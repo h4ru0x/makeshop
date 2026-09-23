@@ -1,0 +1,101 @@
+services:
+  product-service:
+    image: ${DOCKER_IMAGE_NAMESPACE:-lazheart}/product-service:${DOCKER_IMAGE_TAG:-latest}
+    container_name: product-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - STORE_SERVICE_URL=http://store-service:8004
+      - AWS_REGION=${AWS_REGION}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - MONGO_DATABASE=${MONGO_INITDB_DATABASE:-productdb}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${DB_HOST}:27017/productdb?authSource=admin
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/healthcheck').read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  shop-service:
+    image: ${DOCKER_IMAGE_NAMESPACE:-lazheart}/shop-service:${DOCKER_IMAGE_TAG:-latest}
+    container_name: shop-service
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - STORE_SERVICE_URL=http://store-service:8004
+      - SHOP_DATABASE_URL_PRISMA=mysql://${SHOP_DB_USERNAME}:${SHOP_DB_PASSWORD}@${DB_HOST}:3307/${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - JWT_SECRET=${JWT_SECRET}
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/healthcheck').then(r => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1));\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  user-service:
+    image: ${DOCKER_IMAGE_NAMESPACE:-lazheart}/user-service:${DOCKER_IMAGE_TAG:-latest}
+    container_name: user-service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - JPA_DDL_AUTO=${JPA_DDL_AUTO}
+      - APP_BASE_URL=${APP_BASE_URL}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  store-service:
+    image: ${DOCKER_IMAGE_NAMESPACE:-lazheart}/store-service:${DOCKER_IMAGE_TAG:-latest}
+    container_name: store-service
+    restart: unless-stopped
+    ports:
+      - "8004:8004"
+    depends_on:
+      user-service:
+        condition: service_healthy
+      shop-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      data-analyst-service:
+        condition: service_healthy
+    environment:
+      - DATA_ANALYST_SERVICE_URL=http://data-analyst-service:8005
+
+  data-analyst-service:
+    image: ${DOCKER_IMAGE_NAMESPACE:-lazheart}/data-analyst-service:${DOCKER_IMAGE_TAG:-latest}
+    container_name: data-analyst-service
+    restart: unless-stopped
+    ports:
+      - "8005:8005"
+    depends_on:
+      user-service:
+        condition: service_healthy
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - ATHENA_DATABASE=${ATHENA_DATABASE:-openstore_catalog}
+      - ATHENA_RESULTS_BUCKET=${ATHENA_RESULTS_BUCKET}
+      - ATHENA_WORKGROUP=${ATHENA_WORKGROUP:-openstore-workgroup}
+      - ATHENA_TIMEOUT_SECONDS=${ATHENA_TIMEOUT_SECONDS:-90}
+      - USER_SERVICE_URL=http://user-service:8080
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8005/health').read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s

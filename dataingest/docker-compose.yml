@@ -1,0 +1,15 @@
+services:
+  ingest-users:
+    build: ./ingest-users
+    env_file: .env
+    restart: "no"
+
+  ingest-shops:
+    build: ./ingest-shops
+    env_file: .env
+    restart: "no"
+
+  ingest-products:
+    build: ./ingest-products
+    env_file: .env
+    restart: "no"

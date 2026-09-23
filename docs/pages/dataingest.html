@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MakeShop | Data Ingest</title>
+  <meta name="description" content="Ingesta de datos en MakeShop: pipeline Python, boto3, S3 y Athena para analítica reproducible." />
+  <link rel="stylesheet" href="../styles/style.css" />
+  <script defer src="../scripts/main.js"></script>
+  <script defer src="../scripts/scaleimages.js"></script>
+</head>
+<body data-page="dataingest" data-docs-root="../">
+
+  <nav class="docs-navbar">
+    <div class="navbar-left">
+      <button class="sidebar-toggle" id="sidebar-toggle" title="Alternar sidebar" aria-label="Alternar sidebar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="1" y1="4" x2="15" y2="4"/><line x1="1" y1="8" x2="15" y2="8"/><line x1="1" y1="12" x2="15" y2="12"/></svg>
+      </button>
+      <a class="navbar-brand" data-doc-href="index.html" href="#">
+        <span class="brand-dot"></span>OpenDocs <span class="navbar-brand-sub">/ MakeShop</span>
+      </a>
+    </div>
+    <div class="navbar-search">
+      <span class="navbar-search-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg></span>
+      <input type="search" placeholder="Buscar en la documentación…" data-navbar-search id="navbar-search" autocomplete="off" />
+      <div class="search-results-dropdown"></div>
+    </div>
+    <div class="navbar-right">
+      <a class="navbar-icon-btn" href="https://github.com/Lazheart/MakeShop" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.021C22 6.484 17.522 2 12 2z"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar" id="docs-sidebar" aria-label="Navegación principal">
+      <p class="sidebar-label">Navegación</p>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" data-nav-link="home" data-doc-href="index.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1 6l7-5 7 5v9H10V10H6v5H1z"/></svg>Inicio</a>
+        <a class="sidebar-link" data-nav-link="api" data-doc-href="pages/api.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h12M2 8h8M2 12h10"/></svg>API & Gateway</a>
+        <a class="sidebar-link" data-nav-link="frontend" data-doc-href="pages/frontend.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="14" height="11" rx="1.5"/><path d="M5 15h6"/></svg>Frontend</a>
+        <a class="sidebar-link" data-nav-link="dataingest" data-doc-href="pages/dataingest.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>Data Ingest</a>
+        <a class="sidebar-link" data-nav-link="deployment" data-doc-href="pages/deployment.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="8" width="4" height="7" rx="0.5"/><rect x="6" y="4" width="4" height="11" rx="0.5"/><rect x="11" y="1" width="4" height="14" rx="0.5"/></svg>Deployment</a>
+        <a class="sidebar-link" data-nav-link="infrastructure" data-doc-href="pages/infrastructure.html" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="3" r="2"/><circle cx="3" cy="13" r="2"/><circle cx="13" cy="13" r="2"/><path d="M8 5v3M8 8l-4 3M8 8l4 3"/></svg>Infrastructure</a>
+      </nav>
+    </aside>
+
+    <div class="docs-main" id="docs-main">
+      <div class="docs-content">
+
+        <header class="page-header">
+          <p class="page-kicker">Data Ingest</p>
+          <h1>Pipeline de ingesta con boto3, S3 y Athena</h1>
+          <p class="page-lead">Scripts Python que extraen datos de las tres bases operativas, los transforman a formatos portables y los publican en S3. Glue cataloga los archivos y <code>data-analyst-service</code> ejecuta las consultas en Athena.</p>
+        </header>
+
+        <section class="doc-section">
+          <h2 class="section-title">Flujo de ingesta paso a paso</h2>
+          <div class="card-grid">
+            <article class="feature-card">
+              <h3>1. Semilla de datos</h3>
+              <p><code>seed.py</code> y <code>seed_direct.py</code> usan <strong>Faker</strong> para generar usuarios, tiendas, membresías y productos con datos coherentes y reproducibles, llenando las bases de cada servicio.</p>
+            </article>
+            <article class="feature-card">
+              <h3>2. Extracción por dominio</h3>
+              <p>Cada script en <code>ingest-*/</code> extrae una sola fuente: usuarios desde PostgreSQL, tiendas y membresías desde MySQL, productos desde MongoDB. Un script, una responsabilidad.</p>
+            </article>
+            <article class="feature-card">
+              <h3>3. Serialización</h3>
+              <p>Los datos se convierten a <strong>CSV</strong> (usuarios, tiendas, membresías) o <strong>JSON Lines</strong> (productos). JSON Lines mantiene un registro por línea, ideal para consultas analíticas.</p>
+            </article>
+            <article class="feature-card">
+              <h3>4. Publicación en S3</h3>
+              <p>Los archivos se suben con <code>boto3.upload_file</code> a rutas estables: <code>users/users.csv</code>, <code>shops/shops.csv</code>, <code>shops/memberships.csv</code> y <code>products/products.json</code>.</p>
+            </article>
+            <article class="feature-card">
+              <h3>5. Consumo analítico vía Athena</h3>
+              <p><code>data-analyst-service</code> ejecuta las consultas Athena y <code>store-service</code> expone esas rutas al frontend como parte de la API pública.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="doc-section">
+          <h2 class="section-title">Por qué boto3</h2>
+          <div class="card-grid two-up">
+            <article class="feature-card">
+              <h3>SDK oficial de Python para AWS</h3>
+              <p>Los contenedores de ingesta usan boto3 para publicar los archivos en S3. El microservicio analítico usa el mismo SDK para ejecutar y leer consultas de Athena.</p>
+            </article>
+            <article class="feature-card">
+              <h3>Autenticación por IAM</h3>
+              <p>Las credenciales se resuelven con la identidad de ejecución: variables de entorno en local, roles de instancia en EC2, simplificando el movimiento entre entornos.</p>
+            </article>
+            <article class="feature-card">
+              <h3>Subida simple de archivos</h3>
+              <p><code>upload_file</code> envía CSV o JSON al bucket sin reconstruir el proceso de carga a mano ni gestionar multipart manualmente.</p>
+            </article>
+            <article class="feature-card">
+              <h3>Encaje con el stack</h3>
+              <p>Python ya se usa en <code>store-service</code>, <code>product-service</code>, <code>data-analyst-service</code> y los contenedores de ingesta, por lo que boto3 encaja en el stack existente.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="doc-section">
+          <h2 class="section-title">Archivos producidos</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Origen</th><th>Salida</th><th>Destino en S3</th></tr></thead>
+              <tbody>
+                <tr><td>PostgreSQL</td><td>CSV de usuarios</td><td><code>users/users.csv</code></td></tr>
+                <tr><td>MySQL</td><td>CSV de tiendas</td><td><code>shops/shops.csv</code></td></tr>
+                <tr><td>MySQL</td><td>CSV de membresías</td><td><code>shops/memberships.csv</code></td></tr>
+                <tr><td>MongoDB</td><td>JSON Lines de productos</td><td><code>products/products.json</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-success">
+            <strong>Analítica sin impacto operativo:</strong> Athena lee directamente de S3, por lo que las consultas de analytics no añaden carga a PostgreSQL, MySQL ni MongoDB.
+          </div>
+        </section>
+
+        <nav class="page-nav" aria-label="Navegación de páginas">
+          <a class="page-nav-btn prev" data-doc-href="pages/frontend.html" href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 8H3M7 4l-4 4 4 4"/></svg>
+            Frontend
+          </a>
+          <a class="page-nav-btn next" data-doc-href="pages/deployment.html" href="#">
+            Deployment
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+        </nav>
+
+        <footer class="docs-footer">MakeShop Docs · <span data-current-year></span> · <a href="https://github.com/Lazheart/MakeShop" target="_blank" rel="noopener">GitHub</a></footer>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-modal" id="image-modal" role="dialog" aria-modal="true">
+    <div class="image-modal__backdrop" id="modal-backdrop"></div>
+    <div class="image-modal__panel"><button class="image-modal__close" id="modal-close" aria-label="Cerrar">✕</button><img id="modal-img" src="" alt="" /></div>
+  </div>
+</body>
+</html>

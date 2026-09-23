@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("SHOP_DATABASE_URL_PRISMA")
+}
+
+model Shop {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  owner_id    String
+  phone_number String
+  memberships Membership[]
+  theme       ShopTheme?
+}
+
+model ShopTheme {
+  id        String   @id @default(uuid())
+  shopId    String   @unique
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  themeKey  String   @db.VarChar(64)
+  config    Json     @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Membership {
+  id      Int    @id @default(autoincrement())
+  user_id String
+  role    String
+  shop_id String
+  shop    Shop   @relation(fields: [shop_id], references: [id])
+}

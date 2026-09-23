@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MakeShop | Documentación</title>
+  <meta name="description" content="Documentación oficial de MakeShop: plataforma de tiendas virtuales basada en microservicios con React, Spring Boot, FastAPI y Express." />
+  <link rel="stylesheet" href="./styles/style.css" />
+  <script defer src="./scripts/main.js"></script>
+  <script defer src="./scripts/scaleimages.js"></script>
+</head>
+<body data-page="home" data-docs-root="./">
+
+  <!-- ─── NAVBAR ──────────────────────────────────────────── -->
+  <nav class="docs-navbar">
+    <div class="navbar-left">
+      <button class="sidebar-toggle" id="sidebar-toggle" title="Alternar sidebar" aria-label="Alternar sidebar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="1" y1="4" x2="15" y2="4"/><line x1="1" y1="8" x2="15" y2="8"/><line x1="1" y1="12" x2="15" y2="12"/>
+        </svg>
+      </button>
+      <a class="navbar-brand" href="index.html">
+        <span class="brand-dot"></span>
+        OpenDocs <span class="navbar-brand-sub">/ MakeShop</span>
+      </a>
+    </div>
+
+    <div class="navbar-search">
+      <span class="navbar-search-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/>
+        </svg>
+      </span>
+      <input type="search" placeholder="Buscar en la documentación…" data-navbar-search id="navbar-search" autocomplete="off" />
+      <div class="search-results-dropdown"></div>
+    </div>
+
+    <div class="navbar-right">
+      <a class="navbar-icon-btn" href="https://github.com/Lazheart/MakeShop" target="_blank" rel="noopener" title="Ver en GitHub" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.185 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.021C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ─── LAYOUT ───────────────────────────────────────────── -->
+  <div class="docs-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="docs-sidebar" id="docs-sidebar" aria-label="Navegación principal">
+      <p class="sidebar-label">Navegación</p>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" data-nav-link="home" data-doc-href="index.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1 6l7-5 7 5v9H10V10H6v5H1z"/></svg>
+          Inicio
+        </a>
+        <a class="sidebar-link" data-nav-link="api" data-doc-href="pages/api.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+          API & Gateway
+        </a>
+        <a class="sidebar-link" data-nav-link="frontend" data-doc-href="pages/frontend.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="14" height="11" rx="1.5"/><path d="M5 15h6"/></svg>
+          Frontend
+        </a>
+        <a class="sidebar-link" data-nav-link="dataingest" data-doc-href="pages/dataingest.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>
+          Data Ingest
+        </a>
+        <a class="sidebar-link" data-nav-link="deployment" data-doc-href="pages/deployment.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="8" width="4" height="7" rx="0.5"/><rect x="6" y="4" width="4" height="11" rx="0.5"/><rect x="11" y="1" width="4" height="14" rx="0.5"/></svg>
+          Deployment
+        </a>
+        <a class="sidebar-link" data-nav-link="infrastructure" data-doc-href="pages/infrastructure.html" href="#">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="3" r="2"/><circle cx="3" cy="13" r="2"/><circle cx="13" cy="13" r="2"/><path d="M8 5v3M8 8l-4 3M8 8l4 3"/></svg>
+          Infrastructure
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="docs-main" id="docs-main">
+      <div class="docs-content">
+
+        <!-- PAGE HEADER -->
+        <header class="page-header">
+          <p class="page-kicker">Bienvenida</p>
+          <h1>MakeShop Documentation</h1>
+          <p class="page-lead">
+            Plataforma de tiendas virtuales basada en microservicios. Centraliza autenticación, catálogo de productos y gestión de tiendas con una arquitectura escalable y despliegue reproducible.
+          </p>
+        </header>
+
+        <!-- QUÉ ES -->
+        <section class="doc-section">
+          <h2 class="section-title">¿Qué es MakeShop?</h2>
+          <div class="hero-banner">
+            <h2>Crea y administra tiendas virtuales desde un solo sistema</h2>
+            <p>
+              MakeShop permite a los dueños (owners) crear y configurar tiendas en línea con catálogo de productos, temas visuales personalizables y control de usuarios por tienda. Los clientes se registran e inician sesión dentro del contexto de cada tienda, manteniendo el aislamiento de datos entre negocios.
+            </p>
+            <div class="pill-row">
+              <span class="pill">React 19</span>
+              <span class="pill">Vite</span>
+              <span class="pill">TailwindCSS 4</span>
+              <span class="pill">Spring Boot</span>
+              <span class="pill">FastAPI</span>
+              <span class="pill">Express + Prisma</span>
+              <span class="pill">Docker</span>
+              <span class="pill">AWS</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- CÓMO LO HACE -->
+        <section class="doc-section">
+          <h2 class="section-title">¿Cómo funciona? Arquitectura de microservicios</h2>
+          <p class="section-desc">El sistema está dividido en cinco microservicios. El frontend entra por API Gateway y <code>store-service</code> actúa como orquestador hacia los servicios de usuarios, tiendas, productos y analítica.</p>
+          <div class="card-grid two-up">
+            <article class="feature-card">
+              <h3><span class="card-icon">🔀</span>store-service — Gateway</h3>
+              <p>Orquestador HTTP detrás de API Gateway. Recibe las peticiones del frontend, las enruta al servicio correcto y coordina operaciones entre dominios. Corre en el puerto <code>8004</code>.</p>
+            </article>
+            <article class="feature-card">
+              <h3><span class="card-icon">👤</span>user-service — Autenticación</h3>
+              <p>Gestiona registro, login, perfiles, roles y suscripciones. Construido con <strong>Spring Boot</strong> y <strong>PostgreSQL</strong>. Es la fuente de verdad para identidad y permisos. Puerto <code>8080</code>.</p>
+            </article>
+            <article class="feature-card">
+              <h3><span class="card-icon">🏪</span>shop-service — Tiendas</h3>
+              <p>Administra tiendas, membresías y temas visuales del storefront. Construido con <strong>Express + Prisma</strong> sobre <strong>MySQL</strong>. Aplica límites por plan de suscripción. Puerto <code>3000</code>.</p>
+            </article>
+            <article class="feature-card">
+              <h3><span class="card-icon">📦</span>product-service — Catálogo</h3>
+              <p>Maneja el catálogo de productos, subida de imágenes a <strong>S3</strong> y operaciones CRUD por tienda. Construido con <strong>FastAPI</strong> y <strong>MongoDB</strong>. Puerto <code>8000</code>.</p>
+            </article>
+            <article class="feature-card">
+              <h3><span class="card-icon">📊</span>data-analyst-service — Analítica</h3>
+              <p>Ejecuta consultas sobre el catálogo de <strong>Glue/Athena</strong> y devuelve métricas del owner sin base de datos propia. Construido con <strong>FastAPI</strong>. Puerto <code>8005</code>.</p>
+            </article>
+          </div>
+          <div class="callout callout-info">
+            <strong>Principio clave:</strong> el frontend usa una sola URL pública de API Gateway. <code>store-service</code> delega las operaciones a user-service, shop-service, product-service y data-analyst-service.
+          </div>
+        </section>
+
+        <!-- ESTRUCTURA DEL PROYECTO -->
+        <section class="doc-section">
+          <h2 class="section-title">Estructura del proyecto</h2>
+          <pre class="file-tree">
+<span class="dir">MakeShop/</span>
+├── <span class="dir">frontend/</span>            <span class="note"># React 19 + Vite + TailwindCSS 4 + TypeScript</span>
+│   ├── src/
+│   │   ├── components/    <span class="note"># Componentes reutilizables</span>
+│   │   ├── pages/         <span class="note"># HomePage, LoginPage, OwnerPanel, AdminPanel…</span>
+│   │   ├── config/        <span class="note"># AuthContext, ThemeConfig</span>
+│   │   └── App.tsx        <span class="note"># Router principal (React Router)</span>
+│   └── package.json
+├── <span class="dir">backend/</span>
+│   ├── <span class="dir">store-service/</span>      <span class="note"># Gateway FastAPI — puerto 8004</span>
+│   ├── <span class="dir">user-service/</span>       <span class="note"># Auth Spring Boot — puerto 8080</span>
+│   ├── <span class="dir">shop-service/</span>       <span class="note"># Tiendas Express/Prisma — puerto 3000</span>
+│   ├── <span class="dir">product-service/</span>    <span class="note"># Catálogo FastAPI — puerto 8000</span>
+│   ├── <span class="dir">data-analyst-service/</span> <span class="note"># Athena FastAPI — puerto 8005</span>
+│   └── docker-compose.yml <span class="note"># Orquestación de los 5 servicios</span>
+├── <span class="dir">database/</span>
+│   └── docker-compose.yml  <span class="note"># PostgreSQL · MySQL · MongoDB</span>
+├── <span class="dir">dataingest/</span>           <span class="note"># 3 contenedores Python de ingesta hacia S3</span>
+├── <span class="dir">cloud-aws/</span>            <span class="note"># CloudFormation, API Gateway, ALB y Glue/Athena</span>
+├── <span class="dir">docs/</span>                 <span class="note"># Esta documentación</span>
+└── <span class="dir">.github/workflows/</span>   <span class="note"># CI: build y push de imágenes Docker</span>
+          </pre>
+        </section>
+
+        <!-- QUÉ TIENE CADA PÁGINA -->
+        <section class="doc-section">
+          <h2 class="section-title">Qué cubre cada sección</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sección</th>
+                  <th>Qué encontrarás</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a data-doc-href="pages/api.html" href="#">API &amp; Gateway</a></td>
+                  <td>Puertos, variables de entorno, endpoints por servicio, bases de datos y flujo de peticiones.</td>
+                </tr>
+                <tr>
+                  <td><a data-doc-href="pages/frontend.html" href="#">Frontend</a></td>
+                  <td>Stack React + Vite, rutas públicas y protegidas, AuthContext, ThemeConfig y flujo de login por rol.</td>
+                </tr>
+                <tr>
+                  <td><a data-doc-href="pages/dataingest.html" href="#">Data Ingest</a></td>
+                  <td>Pipeline de ingesta con scripts Python, uso de boto3, serialización a CSV/JSON y publicación en S3 para Athena.</td>
+                </tr>
+                <tr>
+                  <td><a data-doc-href="pages/deployment.html" href="#">Deployment</a></td>
+                  <td>CloudFormation como IaC, Docker por servicio, Docker Compose para local y publicación en Amplify.</td>
+                </tr>
+                <tr>
+                  <td><a data-doc-href="pages/infrastructure.html" href="#">Infrastructure</a></td>
+                  <td>Diagramas ER, arquitectura AWS y atributos principales de los modelos de datos.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- NEXT -->
+        <nav class="page-nav" aria-label="Navegación de páginas">
+          <a class="page-nav-btn next" data-doc-href="pages/api.html" href="#">
+            API &amp; Gateway
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+        </nav>
+
+        <footer class="docs-footer">
+          MakeShop Docs · <span data-current-year></span> · <a href="https://github.com/Lazheart/MakeShop" target="_blank" rel="noopener">GitHub</a>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE MODAL -->
+  <div class="image-modal" id="image-modal" role="dialog" aria-modal="true">
+    <div class="image-modal__backdrop" id="modal-backdrop"></div>
+    <div class="image-modal__panel">
+      <button class="image-modal__close" id="modal-close" aria-label="Cerrar">✕</button>
+      <img id="modal-img" src="" alt="" />
+    </div>
+  </div>
+
+</body>
+</html>

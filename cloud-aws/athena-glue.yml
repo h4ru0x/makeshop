@@ -1,0 +1,160 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "OpenStore: S3 ingest bucket + Glue Crawlers + Athena workgroup"
+
+# ── Uso ─────────────────────────────────────────────────────────────────────
+# aws cloudformation deploy \
+#   --template-file cloud-aws/athena-glue.yml \
+#   --stack-name openstore-athena \
+#   --capabilities CAPABILITY_NAMED_IAM
+# ────────────────────────────────────────────────────────────────────────────
+
+Parameters:
+  GlueDatabaseName:
+    Type: String
+    Default: "openstore_catalog"
+    Description: "Nombre de la base de datos en el Glue Data Catalog"
+  CrawlerSchedule:
+    Type: String
+    Default: "cron(0 6 * * ? *)"
+    Description: "Cron schedule para todos los crawlers (default: 6am UTC cada día)"
+
+Resources:
+
+  # ── S3: bucket de ingesta ──────────────────────────────────────────────────
+  IngestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "openstore-ingest-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+
+  # ── Glue: base de datos del catálogo ──────────────────────────────────────
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Ref GlueDatabaseName
+        Description: "Catálogo de datos OpenStore (users, shops, memberships, products)"
+
+  # ── Crawler: users (CSV) ─────────────────────────────────────────────────
+  # Fuente: s3://openstore-ingest-{AccountId}/users/users.csv
+  # Tabla generada: users
+  CrawlerUsers:
+    Type: AWS::Glue::Crawler
+    DependsOn: GlueDatabase
+    Properties:
+      Name: openstore-crawler-users
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://openstore-ingest-${AWS::AccountId}/users/"
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: !Ref CrawlerSchedule
+
+  # ── Crawler: shops_csv (CSV) ──────────────────────────────────────────────
+  # Fuente: s3://openstore-ingest-{AccountId}/shops_csv/shops.csv
+  # Tabla generada: shops_csv
+  CrawlerShops:
+    Type: AWS::Glue::Crawler
+    DependsOn: GlueDatabase
+    Properties:
+      Name: openstore-crawler-shops
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://openstore-ingest-${AWS::AccountId}/shops_csv/"
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: !Ref CrawlerSchedule
+
+  # ── Crawler: memberships_csv (CSV) ────────────────────────────────────────
+  # Fuente: s3://openstore-ingest-{AccountId}/memberships_csv/memberships.csv
+  # Tabla generada: memberships_csv
+  CrawlerMemberships:
+    Type: AWS::Glue::Crawler
+    DependsOn: GlueDatabase
+    Properties:
+      Name: openstore-crawler-memberships
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://openstore-ingest-${AWS::AccountId}/memberships_csv/"
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: !Ref CrawlerSchedule
+
+  # ── Crawler: products (JSON Lines) ────────────────────────────────────────
+  # Fuente: s3://openstore-ingest-{AccountId}/products/products.json
+  # Tabla generada: products
+  CrawlerProducts:
+    Type: AWS::Glue::Crawler
+    DependsOn: GlueDatabase
+    Properties:
+      Name: openstore-crawler-products
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      DatabaseName: !Ref GlueDatabaseName
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://openstore-ingest-${AWS::AccountId}/products/"
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: !Ref CrawlerSchedule
+
+  # ── Athena Workgroup ──────────────────────────────────────────────────────
+  AthenaWorkgroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: openstore-workgroup
+      Description: "Workgroup OpenStore para queries sobre datos ingestados"
+      State: ENABLED
+      WorkGroupConfiguration:
+        ResultConfiguration:
+          OutputLocation: !Sub "s3://openstore-ingest-${AWS::AccountId}/athena-results/"
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        BytesScannedCutoffPerQuery: 1073741824  # 1 GB límite por query
+
+Outputs:
+  IngestBucketName:
+    Description: "Bucket S3 donde los contenedores ingest-* suben los datos"
+    Value: !Ref IngestBucket
+
+  GlueDatabaseName:
+    Description: "Nombre de la base de datos en el Glue Data Catalog"
+    Value: !Ref GlueDatabaseName
+
+  AthenaWorkgroupName:
+    Description: "Workgroup de Athena para ejecutar queries"
+    Value: !Ref AthenaWorkgroup
+
+  AthenaResultsPath:
+    Description: "Ruta S3 donde Athena guarda los resultados"
+    Value: !Sub "s3://openstore-ingest-${AWS::AccountId}/athena-results/"
+
+  CrawlerNames:
+    Description: "Nombres de los crawlers (correr en orden después de ingest-*)"
+    Value: "openstore-crawler-users, openstore-crawler-shops, openstore-crawler-memberships, openstore-crawler-products"

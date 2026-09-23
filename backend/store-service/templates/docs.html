@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OpenStore — Mapeos de documentación API</title>
+    <style>
+      body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding:24px; max-width:900px; margin:0 auto; line-height:1.45}
+      h1{margin-bottom:8px}
+      h2{font-size:1.1rem; margin-top:28px; margin-bottom:12px; color:#333}
+      .lead{color:#555; margin-bottom:20px}
+      .card{border:1px solid #e6e6e6;padding:16px;border-radius:8px;margin:8px 0}
+      .btn{display:inline-block;padding:8px 12px;background:#0b69ff;color:#fff;border-radius:6px;text-decoration:none}
+      .btn-secondary{background:#444}
+      .muted{color:#666; font-size:0.9rem; margin-top:8px}
+      code{background:#f4f4f4; padding:2px 6px; border-radius:4px}
+    </style>
+  </head>
+  <body>
+    <h1>Mapeos hacia APIs</h1>
+    <p class="lead">
+      El <strong>frontend</strong> debe consumir el <strong>Store Service</strong> (contrato en <code>/docs</code>).
+      Esta página enlaza la documentación Swagger/OpenAPI del orquestador y la de cada microservicio interno para depuración o integración.
+    </p>
+    <p>
+      <a class="btn" href="/docs">Abrir Swagger del Store Service</a>
+      <span class="muted" style="margin-left:12px">Contrato único recomendado para el cliente.</span>
+    </p>
+
+    <h2>Referencias por servicio</h2>
+    <p class="muted" style="margin-top:0">Abre cada enlace en una pestaña nueva. Las URLs de servicios internos suelen coincidir con las variables <code>USER_SERVICE_URL</code>, <code>SHOP_SERVICE_URL</code>, <code>PRODUCT_SERVICE_URL</code> en el despliegue.</p>
+
+    {% for s in services %}
+    <div class="card">
+      <strong>{{ s.name }}</strong>
+      {% if s.note is defined %}
+      <div class="muted">{{ s.note }}</div>
+      {% endif %}
+      <div style="margin-top:8px">
+        <a class="btn btn-secondary" href="{{ s.url }}" target="_blank" rel="noreferrer">Abrir documentación</a>
+        <span style="margin-left:12px;color:#666;font-size:0.85rem">{{ s.url }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </body>
+</html>

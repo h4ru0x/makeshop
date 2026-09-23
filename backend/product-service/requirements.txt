@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pydantic
+boto3
+httpx
+motor
+pymongo
+python-multipart

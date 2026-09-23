@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - '@tree-sitter-grammars/tree-sitter-yaml'
+  - core-js-pure
+  - tree-sitter
+  - tree-sitter-json
